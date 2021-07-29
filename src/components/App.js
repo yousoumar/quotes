@@ -12,7 +12,6 @@ function App() {
       }
     );
   const [quotesState, quotesSetState] = useState([]);
-  console.log(quotesState);
   
   useEffect(() => {
     fetch("https://type.fit/api/quotes")
