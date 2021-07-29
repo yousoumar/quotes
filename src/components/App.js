@@ -38,7 +38,6 @@ function App() {
   }
   function generateNewAuthorQuote(authorName){
     const filtredQuotes = quotesState.filter(quote => quote.author === authorName);
-    console.log(filtredQuotes)
     setQuoteState(filtredQuotes[Math.floor(Math.random()*filtredQuotes.length)]);
   }
   return (
