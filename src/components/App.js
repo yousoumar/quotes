@@ -13,6 +13,8 @@ function App() {
     );
   const [quotesState, quotesSetState] = useState([]);
   
+  // to handle api call error
+  const [apiError, setApiError] = useState(false);
   useEffect(() => {
     fetch("https://type.fit/api/quotes")
         .then(response => response.json())
@@ -21,6 +23,7 @@ function App() {
           
         })
         .catch(()=>{
+          setApiError(true);
           setQuoteState({text : "We have issues with our database. Come back later :)", author : "The Developper"})
         })
    
@@ -33,20 +36,40 @@ function App() {
     
 
   }
+  function generateNewAuthorQuote(authorName){
+    const filtredQuotes = quotesState.filter(quote => quote.author === authorName);
+    console.log(filtredQuotes)
+    setQuoteState(filtredQuotes[Math.floor(Math.random()*filtredQuotes.length)]);
+  }
   return (
     <div id="app">
       <div className="quote-author">
         <p className = "quote">"{quoteState.text}"</p>
         <p className = "author">by {quoteState.author ? quoteState.author : "Unknown author"}</p>
+        
       </div>
-
-      <button 
-        className = "new-quote-button"
-        onClick ={generateNewQuote}
-      >
-        New quote
-      </button>
+      {!apiError && 
+        <div className="buttons-container">
+          {
+            quoteState.author && <button 
+                                    className = "new-quote-button"
+                                    onClick ={()=>generateNewAuthorQuote(quoteState.author)}
+                                  >
+                                    More of {quoteState.author.split(' ')[0]}
+                                  </button>
+          }
+          
+          
+          <button 
+            className = "new-quote-button"
+            onClick ={generateNewQuote}
+          >
+            New quote
+          </button>
+        </div>
+      }
     </div>
+      
   );
 }
 
