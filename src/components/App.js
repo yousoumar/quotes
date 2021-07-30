@@ -1,21 +1,32 @@
 import { useState, useEffect} from 'react';
-import bg from '../assets/bg.jpg'
+import bgImage from '../assets/bg.jpg'
 import './App.css';
-
+// https://pixabay.com/api/?key=19829269-60c1bb959fa930d104d880ae3&q=yellow+flowers&image_type=photo
+// 19829269-60c1bb959fa930d104d880ae3
 function App() {
-  
-  document.body.style.backgroundImage = `url(${bg})`;
 
-  const [quoteState, setQuoteState] = useState(
+  // to manipulate the random citaion
+  const [randomQuote, setRandomQuote] = useState(
       { text : "The way we communicate with others and with ourselves ultimately determines the quality of our lives.", 
         author : "Tony Robbins"
       }
     );
+  
+  // to manipulate the quotes that we will receive from the API
   const [quotesState, quotesSetState] = useState([]);
   
-  // to handle api call error
+  // to handle api call errors
   const [apiError, setApiError] = useState(false);
+
+  // to manipulate the background images that we will receive from the API
+  const [bgImages, setBgImgages] = useState([]);
+
+  // to manipulate the background image of the body
+  const [bodyBgImage, setBgImage] = useState(bgImage);
+  document.body.style.backgroundImage = `url(${bodyBgImage})`;
   useEffect(() => {
+
+    // fetch quotes
     fetch("https://type.fit/api/quotes")
         .then(response => response.json())
         .then(data => {
@@ -24,37 +35,53 @@ function App() {
         })
         .catch(()=>{
           setApiError(true);
-          setQuoteState({text : "We have issues with our database. Come back later :)", author : "The Developper"})
-        })
-   
+          setRandomQuote({text : "We have issues with our database. Come back later :)", author : "The Developer"})
+        });
+
+    // fetch background images
+    fetch(`https://pixabay.com/api/?key=19829269-60c1bb959fa930d104d880ae3&category=backgrounds&lang=fr`)
+    .then(response => response.json())
+    .then(images =>{
+        images = images.hits.map(image => image.largeImageURL);
+        setBgImgages(images)
+      }
+    )
+    // if we could not retrieve images from the API
+    .catch(() => {setBgImgages([bgImage])});
     }
   , []);
+
   function generateNewQuote(){
     if(quotesState.length > 0 ){
-      setQuoteState(quotesState[Math.floor(Math.random()*quotesState.length)]);
-    }
-    
+      setBgImage(bgImages[Math.floor(Math.random()*bgImages.length)]);
+      setRandomQuote(quotesState[Math.floor(Math.random()*quotesState.length)]);
+      
 
+    }
   }
+  
   function generateNewAuthorQuote(authorName){
+    setBgImage(bgImages[Math.floor(Math.random()*bgImages.length)]);
     const filtredQuotes = quotesState.filter(quote => quote.author === authorName);
-    setQuoteState(filtredQuotes[Math.floor(Math.random()*filtredQuotes.length)]);
+    setRandomQuote(filtredQuotes[Math.floor(Math.random()*filtredQuotes.length)]);
+    
   }
+
   return (
     <div id="app">
       <div className="quote-author">
-        <p className = "quote">"{quoteState.text}"</p>
-        <p className = "author">by {quoteState.author ? quoteState.author : "Unknown author"}</p>
+        <p className = "quote">"{randomQuote.text}"</p>
+        <p className = "author">by {randomQuote.author ? randomQuote.author : "Unknown author"}</p>
         
       </div>
       {!apiError && 
         <div className="buttons-container">
           {
-            quoteState.author && <button 
+            randomQuote.author && <button 
                                     className = "new-quote-button"
-                                    onClick ={()=>generateNewAuthorQuote(quoteState.author)}
+                                    onClick ={()=>generateNewAuthorQuote(randomQuote.author)}
                                   >
-                                    More of {quoteState.author.split(' ')[0]}
+                                    More of {randomQuote.author.split(' ')[0]}
                                   </button>
           }
           
