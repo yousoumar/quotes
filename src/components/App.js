@@ -1,11 +1,10 @@
 import { useState, useEffect} from 'react';
 import bgImage from '../assets/bg.jpg'
 import './App.css';
-// https://pixabay.com/api/?key=19829269-60c1bb959fa930d104d880ae3&q=yellow+flowers&image_type=photo
-// 19829269-60c1bb959fa930d104d880ae3
+
 function App() {
 
-  // to manipulate the random citaion
+  // to manipulate the random quote
   const [randomQuote, setRandomQuote] = useState(
       { text : "The way we communicate with others and with ourselves ultimately determines the quality of our lives.", 
         author : "Tony Robbins"
@@ -15,14 +14,14 @@ function App() {
   // to manipulate the quotes that we will receive from the API
   const [quotesState, quotesSetState] = useState([]);
   
-  // to handle api call errors
+  // to handle quotes api call errors
   const [apiError, setApiError] = useState(false);
 
   // to manipulate the background images that we will receive from the API
   const [bgImages, setBgImgages] = useState([]);
 
   // to manipulate the background image of the body
-  const [bodyBgImage, setBgImage] = useState(bgImage);
+  const [bodyBgImage, setBodyBgImage] = useState(bgImage);
   document.body.style.backgroundImage = `url(${bodyBgImage})`;
   useEffect(() => {
 
@@ -39,7 +38,7 @@ function App() {
         });
 
     // fetch background images
-    fetch(`https://pixabay.com/api/?key=19829269-60c1bb959fa930d104d880ae3&category=backgrounds&lang=fr`)
+    fetch(`https://pixabay.com/api/?key=19829269-60c1bb959fa930d104d880ae3`)
     .then(response => response.json())
     .then(images =>{
         images = images.hits.map(image => image.largeImageURL);
@@ -53,15 +52,15 @@ function App() {
 
   function generateNewQuote(){
     if(quotesState.length > 0 ){
-      setBgImage(bgImages[Math.floor(Math.random()*bgImages.length)]);
+      setBodyBgImage(bgImages[Math.floor(Math.random()*bgImages.length)]);
       setRandomQuote(quotesState[Math.floor(Math.random()*quotesState.length)]);
       
 
     }
   }
-  
+
   function generateNewAuthorQuote(authorName){
-    setBgImage(bgImages[Math.floor(Math.random()*bgImages.length)]);
+    setBodyBgImage(bgImages[Math.floor(Math.random()*bgImages.length)]);
     const filtredQuotes = quotesState.filter(quote => quote.author === authorName);
     setRandomQuote(filtredQuotes[Math.floor(Math.random()*filtredQuotes.length)]);
     
